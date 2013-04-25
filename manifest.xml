@@ -1,0 +1,16 @@
+<package>
+  <description brief="hotspotobserverISL">
+
+     hotspotobserverISL
+
+  </description>
+  <author>irobot3</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/hotspotobserverISL</url>
+  <depend package="roscpp"/>
+  <depend package="std_msgs"/>
+
+</package>
+
+
