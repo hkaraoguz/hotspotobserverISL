@@ -1,6 +1,8 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
-
+#include <navigationISL/hotspot.h>
+#include<iostream>
+#include<ctime>
 #include <sstream>
 
 int main(int argc, char **argv)
@@ -41,9 +43,9 @@ int main(int argc, char **argv)
    * than we can send them, the number here specifies how many messages to
    * buffer up before throwing some away.
    */
-  ros::Publisher hotspotPublisher = n.advertise<std_msgs::String>("hotspotobserverISL/hotspot", 1000);
+  ros::Publisher hotspotPublisher = n.advertise<navigationISL::hotspot>("hotspotobserverISL/hotspot", 1000);
 
-  ros::Rate loop_rate(10);
+  ros::Rate loop_rate(5);
 
   /**
    * A count of how many messages we have sent. This is used to create
@@ -51,16 +53,24 @@ int main(int argc, char **argv)
    */
   int count = 0;
 
+  int hotspotThreshold = 0.05*RAND_MAX;
+
   while (ros::ok())
   {
     /**
      * This is a message object. You stuff it with data, and then publish it.
      */
-    std_msgs::String msg;
 
-    std::stringstream ss;
-    ss << "hello world " << count;
-    msg.data = ss.str();
+      if(rand()%RAND_MAX < hotspotThreshold){
+
+          std::time_t t = std::time(0);  // t is an integer type
+
+        //std::cout << t << " seconds since 01-Jan-1970\n";
+
+         navigationISL::hotspot hs;
+
+         hs.hotspot = t;
+
 
    // ROS_INFO("%s", msg.data.c_str());
 
@@ -70,12 +80,12 @@ int main(int argc, char **argv)
      * given as a template parameter to the advertise<>() call, as was done
      * in the constructor above.
      */
-    hotspotPublisher.publish(msg);
-
+        hotspotPublisher.publish(hs);
+    }
     ros::spinOnce();
 
     loop_rate.sleep();
-    ++count;
+   // ++count;
   }
 
 
