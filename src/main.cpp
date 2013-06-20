@@ -53,7 +53,7 @@ int main(int argc, char **argv)
    */
   int count = 0;
 
-  int hotspotThreshold = 0.05*RAND_MAX;
+  int hotspotThreshold = 0.005*RAND_MAX;
 
   while (ros::ok())
   {
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 
           std::time_t t = std::time(0);  // t is an integer type
 
-        //std::cout << t << " seconds since 01-Jan-1970\n";
+          std::cout << t ;
 
          navigationISL::hotspot hs;
 
