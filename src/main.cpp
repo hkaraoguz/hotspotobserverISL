@@ -1,6 +1,7 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include <navigationISL/hotspot.h>
+#include "navigationISL/neighborInfo.h"
 #include <iostream>
 #include <ctime>
 #include <sstream>
@@ -14,6 +15,21 @@
 #include <QFile>
 
 double mu;
+bool startGeneratingHotspot = false;
+
+
+// Received start info
+void startInfoCallback(navigationISL::neighborInfo neighborInfo)
+{
+    QString str = QString::fromStdString(neighborInfo.name);
+
+    if(str == "start")
+    {
+        startGeneratingHotspot = true;
+    }
+
+    return;
+}
 
 // Reads the config file
 bool readConfigFile(QString filename)
@@ -60,6 +76,9 @@ int main(int argc, char **argv)
 
   ros::Publisher hotspotPublisher = n.advertise<navigationISL::hotspot>("hotspotobserverISL/hotspot", 1000);
 
+  ros::Subscriber startInfoSubscriber = n.subscribe("communicationISL/neighborInfo",5, startInfoCallback);
+
+
   ros::Rate loop_rate(1);
 
   QString path = QDir::homePath();
@@ -89,25 +108,28 @@ int main(int argc, char **argv)
 
   while (ros::ok())
   {
-      prn = gsl_ran_poisson(r, mu);
-      if(prn>=1){
+      if (startGeneratingHotspot)
+      {
+          prn = gsl_ran_poisson(r, mu);
+          if(prn>=1){
 
-          std::time_t t = std::time(0);  // t is an integer type
+              std::time_t t = std::time(0);  // t is an integer type
 
-          //std::cout << t ;
-          //std::cout << " prn "<< prn << " time " << t;
+              //std::cout << t ;
+              //std::cout << " prn "<< prn << " time " << t;
 
-          qDebug()<< " time " << t;
+              qDebug()<< " time " << t;
 
-         navigationISL::hotspot hs;
+              navigationISL::hotspot hs;
 
-         hs.hotspot = t;
+              hs.hotspot = t;
 
 
-   // ROS_INFO("%s", msg.data.c_str());
+              // ROS_INFO("%s", msg.data.c_str());
 
-        hotspotPublisher.publish(hs);
-    }
+              hotspotPublisher.publish(hs);
+          }
+      }
 
   /*
       if(rand()%RAND_MAX < hotspotThreshold){
@@ -135,3 +157,6 @@ int main(int argc, char **argv)
 
   return 0;
 }
+
+
+
