@@ -14,8 +14,9 @@
 #include <QDir>
 #include <QFile>
 
+
 double mu;
-bool startGeneratingHotspot = false;
+bool startGeneratingHotspot = true;
 
 
 // Received start info
@@ -99,18 +100,26 @@ int main(int argc, char **argv)
 
 //  int hotspotThreshold = 0.005*RAND_MAX;
 
+  /*
   const gsl_rng_type * T;
   gsl_rng * r;
   gsl_rng_env_setup();
   T = gsl_rng_default;
   r = gsl_rng_alloc(T);
+  */
+  long seed;
+  gsl_rng *rng;
+  rng = gsl_rng_alloc(gsl_rng_rand48);
+  seed = time(NULL)*getpid();
+  gsl_rng_set(rng, seed);
   int prn;
 
   while (ros::ok())
   {
       if (startGeneratingHotspot)
       {
-          prn = gsl_ran_poisson(r, mu);
+          //prn = gsl_ran_poisson(r, mu);
+          prn = gsl_ran_poisson(rng, mu);
           if(prn>=1){
 
               std::time_t t = std::time(0);  // t is an integer type
@@ -154,6 +163,8 @@ int main(int argc, char **argv)
    // ++count;
   }
 
+
+  gsl_rng_free(rng);
 
   return 0;
 }
