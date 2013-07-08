@@ -16,7 +16,7 @@
 
 
 double mu;
-bool startGeneratingHotspot = true;
+bool startGeneratingHotspot = false;
 
 
 // Received start info
